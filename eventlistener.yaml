@@ -1,0 +1,33 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: hello-chris-eventlistener 
+spec:
+  serviceAccountName: pipeline
+  triggers:
+  - name: hello-chris-trigger
+    interceptors:
+    - cel:
+        filter: >-
+          body.commits[0].title.split(" ")[0] == "hello-chris"
+        overlays:
+        - key: working-dir
+          expression: 'body.commits[0].title.split(" ")[0]'
+    bindings:
+    - kind: ClusterTriggerBinding       
+      ref: hello-chris-binding
+    template:
+      ref: hello-chris-template
+  - name: hello-dave-trigger
+    interceptors:
+    - cel:
+        filter: >-
+          body.commits[0].title.split(" ")[0] == "hello-dave"
+        overlays:
+        - key: working-dir
+          expression: 'body.commits[0].title.split(" ")[0]'
+    bindings:
+    - kind: ClusterTriggerBinding
+      ref: hello-chris-binding
+    template:
+      ref: hello-chris-template

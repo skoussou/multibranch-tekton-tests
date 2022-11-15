@@ -1,0 +1,41 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: hello-chris-template 
+spec:
+  params:
+  - name: git-url
+    description: The git repository url
+  - name: git-revision
+    description: The git revision
+    default: master
+  - name: deployment-name
+    description: The name of the deployment to be created / patched
+  - name: working-dir
+    description: working directory to build from
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: hello-chris-$(tt.params.deployment-name)-$(uid)
+    spec:
+      serviceAccountName: pipeline
+      pipelineRef:
+        name: hello-chris-pipeline 
+      params:
+      - name: deployment-name
+        value: $(tt.params.working-dir) 
+      - name: git-url
+        value: $(tt.params.git-url)
+      - name: git-revision
+        value: $(tt.params.git-revision)
+      - name: working-dir
+        value: $(tt.params.working-dir)
+      - name: IMAGE
+        value: "image-registry.openshift-image-registry.svc:5000/tekton-pipeline-test/$(tt.params.deployment-name)"
+      workspaces:
+      - name: shared-workspace
+        persistentvolumeclaim:
+          claimName: tekton-pvc 
+

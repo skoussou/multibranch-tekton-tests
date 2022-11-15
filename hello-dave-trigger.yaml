@@ -1,0 +1,11 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: hello-dave-trigger
+spec:
+  serviceAccountName: pipeline
+  bindings:
+    - ref: hello-chris-triggerbinding 
+  template:
+     ref: hello-chros-triggertemplate 
+

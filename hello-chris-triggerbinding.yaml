@@ -1,0 +1,16 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: ClusterTriggerBinding
+metadata:
+  name: hello-chris-binding 
+spec:
+  params:
+  - name: deployment-name
+    value: $(extensions.working-dir)
+  - name: git-url 
+    value: $(body.project.ssh_url)
+  - name: git-revision
+    value: $(body.commits[0].id)
+  - name: working-dir
+    value: $(extensions.working-dir)
+
